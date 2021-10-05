@@ -1,7 +1,10 @@
-const NAME = ['Иван', 'Мария', 'Кристина', 'Виктор', 'Юлия', 'Никита'];
-const MESSAGE = [
+const NAMES = ['Иван', 'Мария', 'Кристина', 'Виктор', 'Юлия', 'Никита'];
+const MESSAGES = [
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
   'Всё отлично!',
+  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
+  'В целом всё неплохо. Но не всё.',
+  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
 ];
 const DESCRIPTIONS = [
   'В целом всё неплохо 1',
@@ -30,7 +33,6 @@ const DESCRIPTIONS = [
   'В целом всё неплохо 24',
   'В целом всё неплохо 25',
 ];
-const ids = [];
 
 const getRandomIntNumber = (from, to) => {
   if (from < 0 || to < 0) {
@@ -51,34 +53,25 @@ const getRandomIntNumber = (from, to) => {
 
 const createPhotoUrl = (photoNumber) => `photos/${photoNumber}.jpg`;
 
-const createDescription = () => {
-  const randomDescriptionIndex = getRandomIntNumber(0, DESCRIPTIONS.length - 1);
-  return DESCRIPTIONS[randomDescriptionIndex];
+const getRandomArrayElement = (elements) => {
+  return elements[_.random(0, elements.length - 1)];
 };
 
-const getId = () => {
-  const randomNumber = getRandomIntNumber(1, 500);
-  if (ids.indexOf(randomNumber) === -1) {
-    ids.push(randomNumber);
-    return randomNumber;
-  }
-  return getId();
+const getRandomMessage = () => {
+  const randomNumber = _.random(0, 1);
+  return randomNumber
+    ? getRandomArrayElement(MESSAGES)
+    : getRandomArrayElement(MESSAGES) + ' ' + getRandomArrayElement(MESSAGES);
 };
 
 const createAvatar = () => `img/avatar-${getRandomIntNumber(1, 6)}.svg`;
 
-const createName = (nameNumber) => NAME[nameNumber];
-
-const createMessage = (messageNumber) => MESSAGE[messageNumber];
-
 const getComment = () => {
-  const randomMessageIndex = getRandomIntNumber(0, MESSAGE.length - 1);
-  const randomNameIndex = getRandomIntNumber(0, NAME.length - 1);
   return {
-    id: getId(),
+    id: uuidv4(),
     avatar: createAvatar(),
-    message: createMessage(randomMessageIndex),
-    name: createName(randomNameIndex),
+    message: getRandomMessage(),
+    name: getRandomArrayElement(NAMES),
   };
 };
 
@@ -88,9 +81,9 @@ const generateComments = () => {
 };
 
 const createDescriptionPhoto = (id) => ({
-  idNumber: getId(),
+  idNumber: uuidv4(),
   urlPhoto: createPhotoUrl(id),
-  descriptionPhoto: createDescription(),
+  descriptionPhoto: getRandomArrayElement(DESCRIPTIONS),
   likes: getRandomIntNumber(15, 200),
   comments: generateComments(),
 });
@@ -100,4 +93,4 @@ const generateObjectArray = (objectCount) =>
     .fill('')
     .map((item, index) => createDescriptionPhoto(index + 1));
 
-generateObjectArray(25);
+console.log(generateObjectArray(5));
