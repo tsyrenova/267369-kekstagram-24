@@ -1,3 +1,4 @@
+/* global uuidv4:readonly */
 const NAMES = ['Иван', 'Мария', 'Кристина', 'Виктор', 'Юлия', 'Никита'];
 const MESSAGES = [
   'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
@@ -53,28 +54,24 @@ const getRandomIntNumber = (from, to) => {
 
 const createPhotoUrl = (photoNumber) => `photos/${photoNumber}.jpg`;
 
-const getRandomArrayElement = (elements) => {
-  return elements[_.random(0, elements.length - 1)];
-};
+const getRandomArrayElement = (elements) =>
+  elements[_.random(0, elements.length - 1)];
 
 const getRandomMessage = () => {
   const randomNumber = _.random(0, 1);
   return randomNumber
     ? getRandomArrayElement(MESSAGES)
-    : getRandomArrayElement(MESSAGES) + ' ' + getRandomArrayElement(MESSAGES);
+    : `${getRandomArrayElement(MESSAGES)} ${getRandomArrayElement(MESSAGES)}`;
 };
 
 const createAvatar = () => `img/avatar-${getRandomIntNumber(1, 6)}.svg`;
 
-const getComment = () => {
-  return {
-    id: uuidv4(),
-    avatar: createAvatar(),
-    message: getRandomMessage(),
-    name: getRandomArrayElement(NAMES),
-  };
-};
-
+const getComment = () => ({
+  id: uuidv4(),
+  avatar: createAvatar(),
+  message: getRandomMessage(),
+  name: getRandomArrayElement(NAMES),
+});
 const generateComments = () => {
   const commentNumber = getRandomIntNumber(1, 20);
   return new Array(commentNumber).fill('').map(() => getComment());
@@ -93,4 +90,4 @@ const generateObjectArray = (objectCount) =>
     .fill('')
     .map((item, index) => createDescriptionPhoto(index + 1));
 
-console.log(generateObjectArray(5));
+generateObjectArray(25);
