@@ -1,3 +1,5 @@
 import { generateObjectArray } from './data.js';
+import { renderUsersPhotos } from './miniature.js';
 
-generateObjectArray(25);
+generateObjectArray();
+renderUsersPhotos();
