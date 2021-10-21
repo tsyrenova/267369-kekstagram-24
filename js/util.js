@@ -36,6 +36,13 @@ const DESCRIPTIONS = [
   'В целом всё неплохо 25',
 ];
 
+const MAX_AVATAR_NUMBER = 6;
+const MIN_AVATAR_NUMBER = 1;
+const MAX_COMMENT_NUMBER = 20;
+const MIN_COMMENT_NUMBER = 1;
+const MAX_LIKES_NUMBER = 200;
+const MIN_LIKES_NUMBER = 15;
+
 const getRandomIntNumber = (from, to) => {
   if (from < 0 || to < 0) {
     // console.error('Минимальное и максимальное значение должны быть больше 0');
@@ -65,7 +72,8 @@ const getRandomMessage = () => {
     : `${getRandomArrayElement(MESSAGES)} ${getRandomArrayElement(MESSAGES)}`;
 };
 
-const createAvatar = () => `img/avatar-${getRandomIntNumber(1, 6)}.svg`;
+const createAvatar = () =>
+  `img/avatar-${getRandomIntNumber(MIN_AVATAR_NUMBER, MAX_AVATAR_NUMBER)}.svg`;
 
 const getComment = () => ({
   id: uuidv4(),
@@ -74,7 +82,10 @@ const getComment = () => ({
   name: getRandomArrayElement(NAMES),
 });
 const generateComments = () => {
-  const commentNumber = getRandomIntNumber(1, 20);
+  const commentNumber = getRandomIntNumber(
+    MIN_COMMENT_NUMBER,
+    MAX_COMMENT_NUMBER,
+  );
   return new Array(commentNumber).fill('').map(() => getComment());
 };
 
@@ -82,7 +93,7 @@ const createDescriptionPhoto = (id) => ({
   idNumber: uuidv4(),
   urlPhoto: createPhotoUrl(id),
   descriptionPhoto: getRandomArrayElement(DESCRIPTIONS),
-  likes: getRandomIntNumber(15, 200),
+  likes: getRandomIntNumber(MIN_LIKES_NUMBER, MAX_LIKES_NUMBER),
   comments: generateComments(),
 });
 
