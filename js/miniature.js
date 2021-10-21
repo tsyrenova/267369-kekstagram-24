@@ -10,7 +10,7 @@ const renderUsersPhotos = () => {
     pictureElement.querySelector('.picture__img').src = item.urlPhoto;
     pictureElement.querySelector('.picture__likes').textContent = item.likes;
     pictureElement.querySelector('.picture__comments').textContent =
-      item.comments[0].message;
+      item.comments.length;
     fragment.appendChild(pictureElement);
   });
 

@@ -84,7 +84,7 @@ const getComment = () => ({
 const generateComments = () => {
   const commentNumber = getRandomIntNumber(
     MIN_COMMENT_NUMBER,
-    MAX_COMMENT_NUMBER
+    MAX_COMMENT_NUMBER,
   );
   return new Array(commentNumber).fill('').map(() => getComment());
 };
