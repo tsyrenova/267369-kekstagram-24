@@ -97,4 +97,6 @@ const createDescriptionPhoto = (id) => ({
   comments: generateComments(),
 });
 
-export { createDescriptionPhoto };
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export { createDescriptionPhoto, isEscapeKey };
