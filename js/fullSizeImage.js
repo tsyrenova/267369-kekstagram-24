@@ -7,6 +7,40 @@ const bigPictureModalCloseElement = bigPictureModalElement.querySelector(
 const pictureModalElement = document.querySelector('.pictures');
 const body = document.body;
 
+const findPicture = (id, pictures) =>
+  pictures.find((picture) => picture.idNumber === id);
+
+const createBigPicture = (currentPicture) => {
+  bigPictureModalElement.classList.remove('hidden');
+  const imgElement = bigPictureModalElement
+    .querySelector('.big-picture__img')
+    .querySelector('img');
+  imgElement.src = currentPicture.urlPhoto;
+  bigPictureModalElement.querySelector('.likes-count').textContent =
+    currentPicture.likes;
+  bigPictureModalElement.querySelector('.comments-count').textContent =
+    currentPicture.comments.length;
+  bigPictureModalElement.querySelector('.social__caption').textContent =
+    currentPicture.descriptionPhoto;
+};
+
+const createCommentList = (currentPicture) => {
+  const commentsContainerElement = document.querySelector('.social__comments');
+  const commentsListFragment = document.createDocumentFragment();
+  const commentListItemElement =
+    commentsContainerElement.querySelector('.social__comment');
+  currentPicture.comments.forEach((comment) => {
+    const commentListItem = commentListItemElement.cloneNode(true);
+    commentListItem.querySelector('.social__picture').src = comment.avatar;
+    commentListItem.querySelector('.social__text').textContent =
+      comment.message;
+    commentListItem.querySelector('.social__picture').alt = comment.name;
+    commentsListFragment.appendChild(commentListItem);
+  });
+  commentsContainerElement.innerHTML = '';
+  commentsContainerElement.appendChild(commentsListFragment);
+};
+
 const closePhotoModal = () => {
   bigPictureModalElement.classList.add('hidden');
   body.classList.remove('modal-open');
@@ -23,37 +57,10 @@ const onPopupEscKeydown = (evt) => {
 const renderBigPicture = (pictures) => {
   pictureModalElement.addEventListener('click', (evt) => {
     if (evt.target.className === 'picture__img') {
-      bigPictureModalElement.classList.remove('hidden');
-      const pictureId = evt.target.id;
-      const currentPicture = pictures.find(
-        (picture) => picture.idNumber === pictureId,
-      );
-      const imgElement = bigPictureModalElement
-        .querySelector('.big-picture__img')
-        .querySelector('img');
-      imgElement.src = currentPicture.urlPhoto;
-      bigPictureModalElement.querySelector('.likes-count').textContent =
-        currentPicture.likes;
-      bigPictureModalElement.querySelector('.comments-count').textContent =
-        currentPicture.comments.length;
-      bigPictureModalElement.querySelector('.social__caption').textContent =
-        currentPicture.descriptionPhoto;
+      const currentPicture = findPicture(evt.target.id, pictures);
+      createBigPicture(currentPicture);
+      createCommentList(currentPicture);
 
-      const commentsContainerElement =
-        document.querySelector('.social__comments');
-      const commentsListFragment = document.createDocumentFragment();
-      const commentListItemElement =
-        commentsContainerElement.querySelector('.social__comment');
-      currentPicture.comments.forEach((comment) => {
-        const commentListItem = commentListItemElement.cloneNode(true);
-        commentListItem.querySelector('.social__picture').src = comment.avatar;
-        commentListItem.querySelector('.social__text').textContent =
-          comment.message;
-        commentListItem.querySelector('.social__picture').alt = comment.name;
-        commentsListFragment.appendChild(commentListItem);
-      });
-      commentsContainerElement.innerHTML = '';
-      commentsContainerElement.appendChild(commentsListFragment);
       const countCommentElement = document.querySelector(
         '.social__comment-count',
       );
