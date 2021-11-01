@@ -80,4 +80,4 @@ const renderBigPicture = (pictures) => {
   });
 };
 
-export { renderBigPicture };
+export { renderBigPicture, body };
