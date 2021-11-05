@@ -1,16 +1,25 @@
 import { isEscapeKey } from './util.js';
 
+let firstComment = 0;
+let lastComment = 5;
+const COMMENTS_COUNT = 5;
+let currentPicture;
+let commentTemplate;
+
+
 const bigPictureModalElement = document.querySelector('.big-picture');
 const bigPictureModalCloseElement = bigPictureModalElement.querySelector(
   '.big-picture__cancel',
 );
 const pictureModalElement = document.querySelector('.pictures');
+const loaderCommentElement = document.querySelector('.comments-loader');
+const showedCommentCountElement = document.querySelector('.comments-count--showed');
 const body = document.body;
 
 const findPicture = (id, pictures) =>
   pictures.find((picture) => picture.idNumber === id);
 
-const createBigPicture = (currentPicture) => {
+const createBigPicture = () => {
   bigPictureModalElement.classList.remove('hidden');
   const imgElement = bigPictureModalElement
     .querySelector('.big-picture__img')
@@ -24,26 +33,44 @@ const createBigPicture = (currentPicture) => {
     currentPicture.descriptionPhoto;
 };
 
-const createCommentList = (currentPicture) => {
-  const commentsContainerElement = document.querySelector('.social__comments');
+const createFragmentWithComments = (comments, commentItem) => {
   const commentsListFragment = document.createDocumentFragment();
-  const commentListItemElement =
-    commentsContainerElement.querySelector('.social__comment');
-  currentPicture.comments.forEach((comment) => {
-    const commentListItem = commentListItemElement.cloneNode(true);
-    commentListItem.querySelector('.social__picture').src = comment.avatar;
-    commentListItem.querySelector('.social__text').textContent =
-      comment.message;
-    commentListItem.querySelector('.social__picture').alt = comment.name;
-    commentsListFragment.appendChild(commentListItem);
+  comments.forEach((comment) => {
+    const template = commentItem.cloneNode(true);
+    template.querySelector('.social__picture').src = comment.avatar;
+    template.querySelector('.social__text').textContent = comment.message;
+    template.querySelector('.social__picture').alt = comment.name;
+    commentsListFragment.appendChild(template);
   });
-  commentsContainerElement.innerHTML = '';
-  commentsContainerElement.appendChild(commentsListFragment);
+  return commentsListFragment;
+};
+
+const createCommentList = () => {
+  const commentsContainerElement = document.querySelector('.social__comments');
+  const comments = currentPicture.comments.slice(
+    firstComment,
+    lastComment,
+  );
+  const fragment = createFragmentWithComments(
+    comments,
+    commentTemplate,
+  );
+  commentsContainerElement.appendChild(fragment);
+  firstComment += comments.length;
+  lastComment += comments.length;
+  showedCommentCountElement.textContent = firstComment;
+  // debugger;
+  if (firstComment === currentPicture.comments.length) {
+    loaderCommentElement.classList.add('hidden');
+  }
 };
 
 const closePhotoModal = () => {
   bigPictureModalElement.classList.add('hidden');
   body.classList.remove('modal-open');
+  firstComment = 0;
+  lastComment = COMMENTS_COUNT;
+  loaderCommentElement.removeEventListener('click', createCommentList);
 };
 
 const onPopupEscKeydown = (evt) => {
@@ -55,18 +82,18 @@ const onPopupEscKeydown = (evt) => {
 };
 
 const renderBigPicture = (pictures) => {
+  const commentsContainerElement = document.querySelector('.social__comments');
+  commentTemplate = commentsContainerElement
+    .querySelector('.social__comment')
+    .cloneNode(true);
   pictureModalElement.addEventListener('click', (evt) => {
     if (evt.target.className === 'picture__img') {
-      const currentPicture = findPicture(evt.target.id, pictures);
+      currentPicture = findPicture(evt.target.id, pictures);
       createBigPicture(currentPicture);
-      createCommentList(currentPicture);
-
-      const countCommentElement = document.querySelector(
-        '.social__comment-count',
-      );
-      countCommentElement.classList.add('hidden');
-      const loaderCoomentElement = document.querySelector('.comments-loader');
-      loaderCoomentElement.classList.add('hidden');
+      commentsContainerElement.innerHTML = '';
+      loaderCommentElement.classList.remove('hidden');
+      createCommentList();
+      loaderCommentElement.addEventListener('click', createCommentList);
 
       body.classList.add('modal-open');
 
@@ -79,5 +106,6 @@ const renderBigPicture = (pictures) => {
     document.removeEventListener('keydown', onPopupEscKeydown);
   });
 };
+
 
 export { renderBigPicture, body };

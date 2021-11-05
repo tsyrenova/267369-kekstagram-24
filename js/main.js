@@ -6,5 +6,4 @@ import { renderPicture } from './form.js';
 const pictures = generateObjectArray();
 renderUsersPhotos(pictures);
 renderBigPicture(pictures);
-renderBigPicture();
 renderPicture();
