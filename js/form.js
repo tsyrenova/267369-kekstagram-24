@@ -8,7 +8,6 @@ const textHashtagsInputElement = document.querySelector('.text__hashtags');
 const commentInputElement = document.querySelector('.text__description');
 const MAX_COMMENTS_LENGTH = 140;
 const HASHTAGS_COUNT = 6;
-const activeElement = document.activeElement;
 
 const closeImgUploadModal = () => {
   imgEdit.classList.add('hidden');
@@ -17,14 +16,15 @@ const closeImgUploadModal = () => {
 };
 
 const onPopupEscKeydown = (evt) => {
+  const activeElement = document.activeElement;
   const isFocusedElement =
-    evt.target.className === 'text__hashtags' ||
-    evt.target.className === 'text__description';
+  activeElement === document.querySelector('.text__hashtags') ||
+  activeElement === document.querySelector('.text__description');
 
   if (!isFocusedElement && isEscapeKey(evt)) {
     evt.preventDefault();
     closeImgUploadModal();
-    activeElement.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('keydown', onPopupEscKeydown);
   }
 };
 
@@ -32,10 +32,10 @@ const updateImageDisplay = () => {
   imgEdit.classList.remove('hidden');
   body.classList.add('modal-open');
   imgEdit.focus();
-  activeElement.addEventListener('keydown', onPopupEscKeydown);
+  document.addEventListener('keydown', onPopupEscKeydown);
   imgUploadCancelElement.addEventListener('click', () => {
     closeImgUploadModal();
-    activeElement.removeEventListener('keydown', onPopupEscKeydown);
+    document.removeEventListener('keydown', onPopupEscKeydown);
   });
 };
 
