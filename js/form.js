@@ -7,6 +7,8 @@ const body = document.body;
 const textHashtagsInputElement = document.querySelector('.text__hashtags');
 const commentInputElement = document.querySelector('.text__description');
 const MAX_COMMENTS_LENGTH = 140;
+const HASHTAGS_COUNT = 6;
+const activeElement = document.activeElement;
 
 const closeImgUploadModal = () => {
   imgEdit.classList.add('hidden');
@@ -22,40 +24,41 @@ const onPopupEscKeydown = (evt) => {
   if (!isFocusedElement && isEscapeKey(evt)) {
     evt.preventDefault();
     closeImgUploadModal();
-    document.removeEventListener('keydown', onPopupEscKeydown);
+    activeElement.removeEventListener('keydown', onPopupEscKeydown);
   }
 };
 
 const updateImageDisplay = () => {
   imgEdit.classList.remove('hidden');
   body.classList.add('modal-open');
-  document.addEventListener('keydown', onPopupEscKeydown);
+  imgEdit.focus();
+  activeElement.addEventListener('keydown', onPopupEscKeydown);
   imgUploadCancelElement.addEventListener('click', () => {
     closeImgUploadModal();
-    document.removeEventListener('keydown', onPopupEscKeydown);
+    activeElement.removeEventListener('keydown', onPopupEscKeydown);
   });
 };
 
-const isValidHastag = (hashtag) => {
+const hashtagRegexp = (hashtag) => {
   const re = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
   const valid = re.test(hashtag);
   return valid;
 };
 
 const checkHashtagUniqueness = (hashtags) => {
-  const uniqHashtags = [...new Set(hashtags)];
+  const uniqHashtags = Array.from(new Set(hashtags));
   return hashtags.length === uniqHashtags.length;
 };
 
 const checkHashtag = (hashtags) => {
   const isUniqHashtags = checkHashtagUniqueness(hashtags);
-  if (isUniqHashtags && hashtags.length < 6) {
-    return hashtags.every(isValidHastag);
+  if (isUniqHashtags && hashtags.length < HASHTAGS_COUNT) {
+    return hashtags.every(hashtagRegexp);
   }
   return false;
 };
 
-const validComments = () => {
+const setCommentsValidityCheck = () => {
   commentInputElement.addEventListener('input', () => {
     const valueLength = commentInputElement.value.length;
     if (valueLength > MAX_COMMENTS_LENGTH) {
@@ -69,7 +72,7 @@ const validComments = () => {
   });
 };
 
-const validHashtags = () => {
+const setHashtagsValidityCheck = () => {
   textHashtagsInputElement.addEventListener('input', () => {
     const arrayHashtags = textHashtagsInputElement.value.split(' ');
     if (!checkHashtag(arrayHashtags)) {
@@ -83,8 +86,8 @@ const validHashtags = () => {
 
 const renderPicture = () => {
   imgUploadElement.addEventListener('change', updateImageDisplay);
-  validHashtags();
-  validComments();
+  setHashtagsValidityCheck();
+  setCommentsValidityCheck();
 };
 
 export { renderPicture };
