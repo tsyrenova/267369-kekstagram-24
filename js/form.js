@@ -2,14 +2,74 @@
 /* global noUiSlider:readonly */
 import { isEscapeKey } from './util.js';
 
+const SCALE_IMG_STEP = 25;
+const SCALE_IMG_MAX = 100;
+const SCALE_IMG_MIN = 25;
+const MAX_COMMENTS_LENGTH = 140;
+const HASHTAGS_COUNT = 6;
+let currentScaleValue = SCALE_IMG_MAX;
+
+const filterNames = {
+  chrome: 'chrome',
+  sepia: 'sepia',
+  marvin: 'marvin',
+  phobos: 'phobos',
+  heat: 'heat',
+};
+
+const filterTypes = {
+  grayscale: 'grayscale',
+  sepia: 'sepia',
+  invert: 'invert',
+  blur: 'blur',
+  brightness: 'brightness',
+};
+
+const sliderConfigs = {
+  chrome: {
+    min: 0,
+    max: 1,
+    start: 1,
+    step: 0.1,
+    filterName: filterNames.chrome,
+  },
+  sepia: {
+    min: 0,
+    max: 1,
+    start: 1,
+    step: 0.1,
+    filterName: filterNames.sepia,
+  },
+  marvin: {
+    min: 0,
+    max: 100,
+    start: 100,
+    step: 1,
+    filterName: filterNames.marvin,
+  },
+  phobos: {
+    min: 0,
+    max: 3,
+    start: 3,
+    step: 0.1,
+    filterName: filterNames.phobos,
+  },
+  heat: {
+    min: 1,
+    max: 3,
+    start: 3,
+    step: 0.1,
+    filterName: filterNames.heat,
+  },
+};
+
+const effectLevelValueElement = document.querySelector('.effect-level__value');
 const imgUploadElement = document.querySelector('.img-upload__input');
 const imgUploadCancelElement = document.querySelector('.img-upload__cancel');
 const imgEdit = document.querySelector('.img-upload__overlay');
 const body = document.body;
 const textHashtagsInputElement = document.querySelector('.text__hashtags');
 const commentInputElement = document.querySelector('.text__description');
-const MAX_COMMENTS_LENGTH = 140;
-const HASHTAGS_COUNT = 6;
 const effectImgElement = imgEdit.querySelector('.effects__list');
 const imgPreviewElement = imgEdit.querySelector('.img-upload__preview  > img');
 
@@ -17,39 +77,16 @@ const scaleContainerElement = imgEdit.querySelector('.img-upload__scale');
 const imgEffectElement = imgEdit.querySelector(
   '.img-upload__effect-level.effect-level',
 );
+const effectNoneElement = imgEdit.querySelector('#effect-none');
+const effectLevelElement = imgEdit.querySelector('.effect-level__slider');
+const scaleValueElement = imgEdit.querySelector('.scale__control--value');
 
-const SCALE_IMG_STEP = 25;
-const SCALE_IMG_MAX = 100;
-const SCALE_IMG_MIN = 25;
-const effectLevelValueElement = document.querySelector('.effect-level__value');
-
-const FILTER_NAMES = {
-  CHROME: 'chrome',
-  SEPIA: 'sepia',
-  MARVIN: 'marvin',
-  PHOBOS: 'phobos',
-  HEAT: 'heat',
-};
-
-const FILTER_TYPES = {
-  GRAYSCALE: 'grayscale',
-  SEPIA: 'sepia',
-  INVERT: 'invert',
-  BLUR: 'blur',
-  BRIGHTNESS: 'brightness',
-};
-
-const createSlider = (
-  min,
-  max,
-  start,
-  step,
-  effectLevelElement,
-  filterName,
-) => {
-  if (effectLevelElement.noUiSlider) {
-    effectLevelElement.noUiSlider.destroy();
+const createSlider = (element, sliderConfig) => {
+  const { min, max, start, step, filterName } = sliderConfig;
+  if (element.noUiSlider) {
+    element.noUiSlider.destroy();
   }
+
   const sliderParametrs = {
     range: {
       min,
@@ -65,33 +102,53 @@ const createSlider = (
   effectLevelElement.noUiSlider.on('update', (values, handle) => {
     effectLevelValueElement.value = values[handle];
     switch (filterName) {
-      case FILTER_NAMES.CHROME:
-        imgPreviewElement.style.filter = `${FILTER_TYPES.GRAYSCALE}(${values[handle]})`;
+      case filterNames.chrome:
+        imgPreviewElement.style.filter = `${filterTypes.grayscale}(${values[handle]})`;
         break;
-      case FILTER_NAMES.SEPIA:
-        imgPreviewElement.style.filter = `${FILTER_TYPES.SEPIA}(${values[handle]})`;
+      case filterNames.sepia:
+        imgPreviewElement.style.filter = `${filterTypes.sepia}(${values[handle]})`;
         break;
-      case FILTER_NAMES.MARVIN:
-        imgPreviewElement.style.filter = `${FILTER_TYPES.INVERT}(${values[handle]}%)`;
+      case filterNames.marvin:
+        imgPreviewElement.style.filter = `${filterTypes.invert}(${values[handle]}%)`;
         break;
-      case FILTER_NAMES.PHOBOS:
-        imgPreviewElement.style.filter = `${FILTER_TYPES.BLUR}(${values[handle]}px)`;
+      case filterNames.phobos:
+        imgPreviewElement.style.filter = `${filterTypes.blur}(${values[handle]}px)`;
         break;
-      case FILTER_NAMES.HEAT:
-        imgPreviewElement.style.filter = `${FILTER_TYPES.BRIGHTNESS}(${values[handle]})`;
+      case filterNames.heat:
+        imgPreviewElement.style.filter = `${filterTypes.brightness}(${values[handle]})`;
         break;
     }
   });
 };
 
+const applyFilter = (element, presetNames) => {
+  switch (element.value) {
+    case presetNames.chrome:
+      createSlider(effectLevelElement, sliderConfigs.chrome);
+      break;
+    case presetNames.sepia:
+      createSlider(effectLevelElement, sliderConfigs.sepia);
+      break;
+    case presetNames.marvin:
+      createSlider(effectLevelElement, sliderConfigs.marvin);
+      break;
+    case presetNames.phobos:
+      createSlider(effectLevelElement, sliderConfigs.phobos);
+      break;
+    case presetNames.heat:
+      createSlider(effectLevelElement, sliderConfigs.heat);
+      break;
+  }
+};
+
 const changeImgEffect = () => {
-  const effectNoneElement = imgEdit.querySelector('#effect-none');
-  const effectLevelElement = imgEdit.querySelector('.effect-level__slider');
   imgEffectElement.classList.add('visually-hidden');
   effectImgElement.addEventListener('click', () => {
     if (effectNoneElement === document.activeElement) {
       imgEffectElement.classList.add('visually-hidden');
       imgPreviewElement.className = '';
+      imgPreviewElement.style = '';
+      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
       imgPreviewElement.classList.add(
         `effects__preview--${document.activeElement.value}`,
       );
@@ -102,54 +159,40 @@ const changeImgEffect = () => {
         `effects__preview--${document.activeElement.value}`,
       );
 
-      switch (document.activeElement.value) {
-        case FILTER_NAMES.CHROME:
-          createSlider(0, 1, 1, 0.1, effectLevelElement, FILTER_NAMES.CHROME);
-          break;
-        case FILTER_NAMES.SEPIA:
-          createSlider(0, 1, 1, 0.1, effectLevelElement, FILTER_NAMES.SEPIA);
-          break;
-        case FILTER_NAMES.MARVIN:
-          createSlider(0, 100, 100, 1, effectLevelElement, FILTER_NAMES.MARVIN);
-          break;
-        case FILTER_NAMES.PHOBOS:
-          createSlider(0, 3, 3, 0.1, effectLevelElement, FILTER_NAMES.PHOBOS);
-          break;
-        case FILTER_NAMES.HEAT:
-          createSlider(1, 3, 3, 0.1, effectLevelElement, FILTER_NAMES.HEAT);
-          break;
-      }
+      applyFilter(document.activeElement, filterNames);
     }
   });
 };
 
-const changeImgSize = () => {
-  let currentScaleValue = SCALE_IMG_MAX;
-  const scaleValueElement = imgEdit.querySelector('.scale__control--value');
-  scaleValueElement.value = `${currentScaleValue}%`;
-  scaleContainerElement.addEventListener('click', (evt) => {
-    if (evt.target.className === 'scale__control  scale__control--smaller') {
-      if (currentScaleValue > SCALE_IMG_MIN) {
-        currentScaleValue -= SCALE_IMG_STEP;
-        scaleValueElement.value = `${currentScaleValue}%`;
-        imgPreviewElement.style.transform = `scale(${currentScaleValue / 100})`;
-      }
-    } else if (
-      evt.target.className === 'scale__control  scale__control--bigger'
-    ) {
-      if (currentScaleValue < SCALE_IMG_MAX) {
-        currentScaleValue += SCALE_IMG_STEP;
-        scaleValueElement.value = `${currentScaleValue}%`;
-        imgPreviewElement.style.transform = `scale(${currentScaleValue / 100})`;
-      }
+const onImageSizeChange = (evt) => {
+  if (evt.target.className === 'scale__control  scale__control--smaller') {
+    if (currentScaleValue > SCALE_IMG_MIN) {
+      currentScaleValue -= SCALE_IMG_STEP;
+      scaleValueElement.value = `${currentScaleValue}%`;
+      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
     }
-  });
+  } else if (
+    evt.target.className === 'scale__control  scale__control--bigger'
+  ) {
+    if (currentScaleValue < SCALE_IMG_MAX) {
+      currentScaleValue += SCALE_IMG_STEP;
+      scaleValueElement.value = `${currentScaleValue}%`;
+      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
+    }
+  }
+};
+
+const changeImgSize = () => {
+  scaleValueElement.value = `${currentScaleValue}%`;
+  scaleContainerElement.addEventListener('click', onImageSizeChange);
 };
 
 const closeImgUploadModal = () => {
   imgEdit.classList.add('hidden');
   body.classList.remove('modal-open');
   imgUploadElement.value = '';
+  imgPreviewElement.className = '';
+  imgPreviewElement.style = '';
 };
 
 const onPopupEscKeydown = (evt) => {
