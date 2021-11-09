@@ -1,11 +1,10 @@
 import { isEscapeKey } from './util.js';
 
-let firstComment = 0;
-let lastComment = 5;
 const COMMENTS_COUNT = 5;
+let firstComment = 0;
+let lastComment = COMMENTS_COUNT;
 let currentPicture;
 let commentTemplate;
-
 
 const bigPictureModalElement = document.querySelector('.big-picture');
 const bigPictureModalCloseElement = bigPictureModalElement.querySelector(
@@ -13,7 +12,9 @@ const bigPictureModalCloseElement = bigPictureModalElement.querySelector(
 );
 const pictureModalElement = document.querySelector('.pictures');
 const loaderCommentElement = document.querySelector('.comments-loader');
-const showedCommentCountElement = document.querySelector('.comments-count--showed');
+const showedCommentCountElement = document.querySelector(
+  '.comments-count--showed',
+);
 const body = document.body;
 
 const findPicture = (id, pictures) =>
@@ -47,19 +48,12 @@ const createFragmentWithComments = (comments, commentItem) => {
 
 const createCommentList = () => {
   const commentsContainerElement = document.querySelector('.social__comments');
-  const comments = currentPicture.comments.slice(
-    firstComment,
-    lastComment,
-  );
-  const fragment = createFragmentWithComments(
-    comments,
-    commentTemplate,
-  );
+  const comments = currentPicture.comments.slice(firstComment, lastComment);
+  const fragment = createFragmentWithComments(comments, commentTemplate);
   commentsContainerElement.appendChild(fragment);
   firstComment += comments.length;
   lastComment += comments.length;
   showedCommentCountElement.textContent = firstComment;
-  // debugger;
   if (firstComment === currentPicture.comments.length) {
     loaderCommentElement.classList.add('hidden');
   }
@@ -106,6 +100,5 @@ const renderBigPicture = (pictures) => {
     document.removeEventListener('keydown', onPopupEscKeydown);
   });
 };
-
 
 export { renderBigPicture, body };
