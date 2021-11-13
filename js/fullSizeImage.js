@@ -1,3 +1,4 @@
+import { sendData } from './api.js';
 import { isEscapeKey } from './util.js';
 
 const COMMENTS_COUNT = 5;
@@ -15,23 +16,24 @@ const loaderCommentElement = document.querySelector('.comments-loader');
 const showedCommentCountElement = document.querySelector(
   '.comments-count--showed',
 );
+const formElement = pictureModalElement.querySelector('.img-upload__form');
 const body = document.body;
 
 const findPicture = (id, pictures) =>
-  pictures.find((picture) => picture.idNumber === id);
+  pictures.find((picture) => picture.id === id);
 
 const createBigPicture = () => {
   bigPictureModalElement.classList.remove('hidden');
   const imgElement = bigPictureModalElement
     .querySelector('.big-picture__img')
     .querySelector('img');
-  imgElement.src = currentPicture.urlPhoto;
+  imgElement.src = currentPicture.url;
   bigPictureModalElement.querySelector('.likes-count').textContent =
     currentPicture.likes;
   bigPictureModalElement.querySelector('.comments-count').textContent =
     currentPicture.comments.length;
   bigPictureModalElement.querySelector('.social__caption').textContent =
-    currentPicture.descriptionPhoto;
+    currentPicture.description;
 };
 
 const createFragmentWithComments = (comments, commentItem) => {
@@ -75,6 +77,16 @@ const onPopupEscKeydown = (evt) => {
   }
 };
 
+const sendForm = () => {
+  formElement.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    sendData(
+      'https://24.javascript.pages.academy/kekstagram',
+      new FormData(evt.target),
+    );
+  });
+};
+
 const renderBigPicture = (pictures) => {
   const commentsContainerElement = document.querySelector('.social__comments');
   commentTemplate = commentsContainerElement
@@ -82,7 +94,7 @@ const renderBigPicture = (pictures) => {
     .cloneNode(true);
   pictureModalElement.addEventListener('click', (evt) => {
     if (evt.target.className === 'picture__img') {
-      currentPicture = findPicture(evt.target.id, pictures);
+      currentPicture = findPicture(Number(evt.target.id), pictures);
       createBigPicture(currentPicture);
       commentsContainerElement.innerHTML = '';
       loaderCommentElement.classList.remove('hidden');
@@ -101,4 +113,4 @@ const renderBigPicture = (pictures) => {
   });
 };
 
-export { renderBigPicture, body };
+export { renderBigPicture, body, sendForm, closePhotoModal };
