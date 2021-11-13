@@ -80,6 +80,7 @@ const imgEffectElement = imgEdit.querySelector(
 const effectNoneElement = imgEdit.querySelector('#effect-none');
 const effectLevelElement = imgEdit.querySelector('.effect-level__slider');
 const scaleValueElement = imgEdit.querySelector('.scale__control--value');
+const formElement = document.querySelector('.img-upload__form');
 
 const createSlider = (element, sliderConfig) => {
   const { min, max, start, step, filterName } = sliderConfig;
@@ -148,7 +149,9 @@ const changeImgEffect = () => {
       imgEffectElement.classList.add('visually-hidden');
       imgPreviewElement.className = '';
       imgPreviewElement.style = '';
-      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
+      imgPreviewElement.style.transform = `scale(${
+        currentScaleValue / SCALE_IMG_MAX
+      })`;
       imgPreviewElement.classList.add(
         `effects__preview--${document.activeElement.value}`,
       );
@@ -164,22 +167,30 @@ const changeImgEffect = () => {
   });
 };
 
-const onImageSizeChange = (evt) => {
+const changeScale = () => {
+  scaleValueElement.value = `${currentScaleValue}%`;
+  imgPreviewElement.style.transform = `scale(${
+    currentScaleValue / SCALE_IMG_MAX
+  })`;
+};
+
+const calculateScaleValue = (evt) => {
   if (evt.target.className === 'scale__control  scale__control--smaller') {
     if (currentScaleValue > SCALE_IMG_MIN) {
       currentScaleValue -= SCALE_IMG_STEP;
-      scaleValueElement.value = `${currentScaleValue}%`;
-      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
     }
   } else if (
     evt.target.className === 'scale__control  scale__control--bigger'
   ) {
     if (currentScaleValue < SCALE_IMG_MAX) {
       currentScaleValue += SCALE_IMG_STEP;
-      scaleValueElement.value = `${currentScaleValue}%`;
-      imgPreviewElement.style.transform = `scale(${currentScaleValue / SCALE_IMG_MAX})`;
     }
   }
+};
+
+const onImageSizeChange = (evt) => {
+  calculateScaleValue(evt);
+  changeScale();
 };
 
 const changeImgSize = () => {
@@ -193,6 +204,8 @@ const closeImgUploadModal = () => {
   imgUploadElement.value = '';
   imgPreviewElement.className = '';
   imgPreviewElement.style = '';
+  currentScaleValue = `${SCALE_IMG_MAX}`;
+  formElement.reset();
 };
 
 const onPopupEscKeydown = (evt) => {
@@ -272,4 +285,4 @@ const renderPicture = () => {
   setCommentsValidityCheck();
 };
 
-export { renderPicture };
+export { renderPicture, closeImgUploadModal };
