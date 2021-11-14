@@ -7,6 +7,7 @@ const SCALE_IMG_MAX = 100;
 const SCALE_IMG_MIN = 25;
 const MAX_COMMENTS_LENGTH = 140;
 const HASHTAGS_COUNT = 6;
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 let currentScaleValue = SCALE_IMG_MAX;
 
 const filterNames = {
@@ -232,6 +233,17 @@ const updateImageDisplay = () => {
   });
   changeImgSize();
   changeImgEffect();
+
+  const file = imgUploadElement.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (file) {
+    if (matches) {
+      imgPreviewElement.src = URL.createObjectURL(file);
+    }
+  }
 };
 
 const hashtagRegexp = (hashtag) => {
