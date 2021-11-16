@@ -1,4 +1,7 @@
-import { renderBigPicture } from './fullSizeImage.js';
+import {
+  removeMinContainerEventListener,
+  renderBigPicture
+} from './fullSizeImage.js';
 
 const RANDOM_IMGS_COUNT = 10;
 const DELAY = 500;
@@ -67,16 +70,19 @@ const onFilterClick = (defaultPictures, sortedPictures) => {
   }
   switch (document.activeElement.id) {
     case filters.default:
+      removeMinContainerEventListener();
       renderUsersPhotos(defaultPictures);
       renderBigPicture(defaultPictures);
       break;
     case filters.random:
       sortedPictures = getRandomImgs(defaultPictures, RANDOM_IMGS_COUNT);
+      removeMinContainerEventListener();
       renderUsersPhotos(sortedPictures);
       renderBigPicture(sortedPictures);
       break;
     case filters.discussed:
       sortedPictures = _.sortBy(defaultPictures, 'likes').reverse();
+      removeMinContainerEventListener();
       renderUsersPhotos(sortedPictures);
       renderBigPicture(sortedPictures);
       break;

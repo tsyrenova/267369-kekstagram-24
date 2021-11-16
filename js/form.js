@@ -9,6 +9,7 @@ const MAX_COMMENTS_LENGTH = 140;
 const HASHTAGS_COUNT = 6;
 const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 let currentScaleValue = SCALE_IMG_MAX;
+const RE = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 
 const filterNames = {
   chrome: 'chrome',
@@ -222,7 +223,7 @@ const onPopupEscKeydown = (evt) => {
   }
 };
 
-const updateImageDisplay = () => {
+const onUpdateImageDisplay = () => {
   imgEdit.classList.remove('hidden');
   body.classList.add('modal-open');
   imgEdit.focus();
@@ -247,8 +248,7 @@ const updateImageDisplay = () => {
 };
 
 const hashtagRegexp = (hashtag) => {
-  const re = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
-  const valid = re.test(hashtag);
+  const valid = RE.test(hashtag);
   return valid;
 };
 
@@ -268,13 +268,13 @@ const checkHashtag = (hashtags) => {
 const setCommentsValidityCheck = () => {
   commentInputElement.addEventListener('input', () => {
     const valueLength = commentInputElement.value.length;
+    commentInputElement.setCustomValidity('');
     if (valueLength > MAX_COMMENTS_LENGTH) {
       commentInputElement.setCustomValidity(
         `Удалите лишние ${valueLength - MAX_COMMENTS_LENGTH} симв.`,
       );
-    } else {
-      commentInputElement.setCustomValidity('');
     }
+
     commentInputElement.reportValidity();
   });
 };
@@ -292,7 +292,7 @@ const setHashtagsValidityCheck = () => {
 };
 
 const renderPicture = () => {
-  imgUploadElement.addEventListener('change', updateImageDisplay);
+  imgUploadElement.addEventListener('change', onUpdateImageDisplay);
   setHashtagsValidityCheck();
   setCommentsValidityCheck();
 };
