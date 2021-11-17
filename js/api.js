@@ -2,31 +2,32 @@ import { closeImgUploadModal } from './form.js';
 import { showModal } from './modals.js';
 
 const errorLoadElement = document.querySelector('#load-error').content;
-const errorTemplate = document.querySelector('#error').content;
-const succesModal = document.querySelector('#success').content;
+const errorTemplateElement = document.querySelector('#error').content;
+const succesModalElement = document.querySelector('#success').content;
 
-async function getData(url = '') {
+const getData = async (url = '') => {
   try {
     const response = await fetch(url);
     return await response.json();
   } catch (error) {
     showModal(errorLoadElement);
   }
-}
+};
 
-async function sendData(url = '', body) {
+const sendData = async (url = '', body) => {
   try {
     const response = await fetch(url, {
       method: 'POST',
       body,
     });
     const json = await response.json();
-    showModal(succesModal);
     closeImgUploadModal();
+    showModal(succesModalElement);
     return json;
   } catch (error) {
-    showModal(errorTemplate);
+    closeImgUploadModal();
+    showModal(errorTemplateElement);
   }
-}
+};
 
 export { getData, sendData };

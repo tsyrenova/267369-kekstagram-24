@@ -8,18 +8,18 @@ const createModalContainer = () => {
 
 const getModalContainer = () => document.querySelector('#modalContainer');
 
-const hideModal = () => {
+const onModalButtonClick = () => {
   const modalContainer = getModalContainer();
   if (modalContainer) {
     modalContainer.remove();
-    modalContainer.removeEventListener('click', hideModal);
+    modalContainer.removeEventListener('click', onModalButtonClick);
   }
 };
 
 const onModalEscKeydown = (evt) => {
   if (isEscapeKey(evt)) {
     evt.preventDefault();
-    hideModal();
+    onModalButtonClick();
     document.removeEventListener('keydown', onModalEscKeydown);
   }
 };
@@ -27,7 +27,7 @@ const onModalEscKeydown = (evt) => {
 const onOutsideClick = (evt) => {
   if (evt.target.id !== 'modalContainer' && evt.target.tagName !== 'DIV') {
     document.removeEventListener('click', onOutsideClick);
-    hideModal();
+    onModalButtonClick();
   }
 };
 
@@ -37,7 +37,7 @@ const showModal = (template) => {
   const modalContainer = getModalContainer();
   modalContainer.append(templateCopy);
   const button = modalContainer.querySelector('button');
-  button.addEventListener('click', hideModal);
+  button.addEventListener('click', onModalButtonClick);
   document.addEventListener('keydown', onModalEscKeydown);
   modalContainer.addEventListener('click', onOutsideClick);
 };

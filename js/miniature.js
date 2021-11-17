@@ -1,7 +1,7 @@
 import {
   removeMinContainerEventListener,
   renderBigPicture
-} from './fullSizeImage.js';
+} from './fullsize-image.js';
 
 const RANDOM_IMGS_COUNT = 10;
 const DELAY = 500;
@@ -27,11 +27,11 @@ const renderUsersPhotos = (pictures) => {
 
   removePictures(picturesElements);
 
-  const pictureTemplate = document.querySelector('#picture').content;
+  const pictureTemplateElement = document.querySelector('#picture').content;
   const fragment = document.createDocumentFragment();
 
   pictures.forEach((picture) => {
-    const pictureElement = pictureTemplate.cloneNode(true);
+    const pictureElement = pictureTemplateElement.cloneNode(true);
     pictureElement.querySelector('.picture__img').src = picture.url;
     pictureElement.querySelector('.picture__likes').textContent = picture.likes;
     pictureElement.querySelector('.picture__comments').textContent =
@@ -50,14 +50,14 @@ const imgFilterFormElement =
 let imgFilterDefaultElement = imgFilterElement.querySelector('#filter-default');
 
 const getRandomImgs = (pictures, picturesCount) => {
-  const newArray = [];
-  while (newArray.length < picturesCount) {
+  const newPictures = [];
+  while (newPictures.length < picturesCount) {
     const randomNumber = _.random(0, picturesCount);
-    if (!newArray.includes(pictures[randomNumber])) {
-      newArray.push(pictures[randomNumber]);
+    if (!newPictures.includes(pictures[randomNumber])) {
+      newPictures.push(pictures[randomNumber]);
     }
   }
-  return newArray;
+  return newPictures;
 };
 
 const onFilterClick = (defaultPictures, sortedPictures) => {

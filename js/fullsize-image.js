@@ -1,4 +1,3 @@
-import { sendData } from './api.js';
 import { isEscapeKey } from './util.js';
 
 const COMMENTS_COUNT = 5;
@@ -7,21 +6,20 @@ let lastComment = COMMENTS_COUNT;
 let currentPicture;
 let userPictures = [];
 
-const commentTemplate = document
+const bigPictureModalElement = document.querySelector('.big-picture');
+const commentTemplateElement = bigPictureModalElement
   .querySelector('.social__comment')
   .cloneNode(true);
-const bigPictureModalElement = document.querySelector('.big-picture');
 const bigPictureModalCloseElement = bigPictureModalElement.querySelector(
   '.big-picture__cancel',
 );
 const pictureModalElement = document.querySelector('.pictures');
-const loaderCommentElement = document.querySelector('.comments-loader');
-const showedCommentCountElement = document.querySelector(
+const loaderCommentElement = bigPictureModalElement.querySelector('.comments-loader');
+const showedCommentCountElement = bigPictureModalElement.querySelector(
   '.comments-count--showed',
 );
-const formElement = pictureModalElement.querySelector('.img-upload__form');
-const body = document.body;
-const commentsContainerElement = document.querySelector('.social__comments');
+const bodyElement = document.body;
+const commentsContainerElement = bigPictureModalElement.querySelector('.social__comments');
 
 const findPicture = (id, pictures) =>
   pictures.find((picture) => picture.id === id);
@@ -52,9 +50,9 @@ const createFragmentWithComments = (comments, commentItem) => {
   return commentsListFragment;
 };
 
-const createCommentList = () => {
+const onCommentLoaderClick = () => {
   const comments = currentPicture.comments.slice(firstComment, lastComment);
-  const fragment = createFragmentWithComments(comments, commentTemplate);
+  const fragment = createFragmentWithComments(comments, commentTemplateElement);
   commentsContainerElement.appendChild(fragment);
   firstComment += comments.length;
   lastComment += comments.length;
@@ -66,10 +64,10 @@ const createCommentList = () => {
 
 const closePhotoModal = () => {
   bigPictureModalElement.classList.add('hidden');
-  body.classList.remove('modal-open');
+  bodyElement.classList.remove('modal-open');
   firstComment = 0;
   lastComment = COMMENTS_COUNT;
-  loaderCommentElement.removeEventListener('click', createCommentList);
+  loaderCommentElement.removeEventListener('click', onCommentLoaderClick);
 };
 
 const onPopupEscKeydown = (evt) => {
@@ -80,15 +78,15 @@ const onPopupEscKeydown = (evt) => {
   }
 };
 
-const sendForm = () => {
-  formElement.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    sendData(
-      'https://24.javascript.pages.academy/kekstagram',
-      new FormData(evt.target),
-    );
-  });
-};
+// const sendForm = () => {
+//   formElement.addEventListener('submit', (evt) => {
+//     evt.preventDefault();
+//     sendData(
+//       'https://24.javascript.pages.academy/kekstagram',
+//       new FormData(evt.target),
+//     );
+//   });
+// };
 
 const onMinPicturesContainerClick = (evt) => {
   if (evt.target.className === 'picture__img') {
@@ -96,9 +94,9 @@ const onMinPicturesContainerClick = (evt) => {
     createBigPicture(currentPicture);
     commentsContainerElement.innerHTML = '';
     loaderCommentElement.classList.remove('hidden');
-    createCommentList();
-    loaderCommentElement.addEventListener('click', createCommentList);
-    body.classList.add('modal-open');
+    onCommentLoaderClick();
+    loaderCommentElement.addEventListener('click', onCommentLoaderClick);
+    bodyElement.classList.add('modal-open');
     document.addEventListener('keydown', onPopupEscKeydown);
   }
 };
@@ -119,8 +117,7 @@ const renderBigPicture = (pictures) => {
 
 export {
   renderBigPicture,
-  body,
-  sendForm,
+  bodyElement as body,
   closePhotoModal,
   removeMinContainerEventListener
 };
