@@ -106,3 +106,4 @@ const createImgFilter = (pictures) => {
 };
 
 export { renderUsersPhotos, createImgFilter };
+
